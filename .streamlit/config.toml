@@ -1,0 +1,76 @@
+# Teal admin-panel theme — inspired by the reference dashboard mockup
+# Lighter, more vibrant dark theme with a teal accent (less "black navy" than before)
+
+[theme]
+base = "dark"
+primaryColor = "#14B8A6"             # Vibrant teal accent (buttons, active elements)
+backgroundColor = "#1B2C2F"          # Dark teal-charcoal — same hue family as the sidebar
+secondaryBackgroundColor = "#25393D" # Card / widget background, teal-tinted (not blue-slate)
+codeBackgroundColor = "#25393D"
+textColor = "#E7ECF2"                # Light text
+linkColor = "#2DD4BF"
+borderColor = "#374C50"
+codeTextColor = "#CBD5E1"
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "12px"                  # Rounder cards, matching the admin-panel look
+buttonRadius = "12px"
+
+# Typography
+font = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "'Inter':https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+baseFontSize = 14
+baseFontWeight = 400
+codeFontSize = "13px"
+headingFontSizes = ["28px", "22px", "18px", "16px", "14px", "12px"]
+headingFontWeights = [700, 600, 600, 600, 500, 500]
+linkUnderline = false
+
+# Semantic colors
+greenColor = "#34D399"
+redColor = "#F87171"
+yellowColor = "#FBBF24"
+orangeColor = "#FB923C"
+blueColor = "#38BDF8"
+violetColor = "#A78BFA"
+grayColor = "#94A3B8"
+
+# Chart colors — teal-forward categorical palette
+chartCategoricalColors = [
+    "#14B8A6",
+    "#2DD4BF",
+    "#38BDF8",
+    "#A78BFA",
+    "#FBBF24",
+    "#F87171",
+    "#94A3B8",
+    "#FB923C",
+]
+
+# Sequential colors for heatmaps (teal gradient)
+chartSequentialColors = [
+    "#042F2E",
+    "#064E3B",
+    "#065F5A",
+    "#0D9488",
+    "#14B8A6",
+    "#2DD4BF",
+    "#5EEAD4",
+    "#99F6E4",
+    "#CCFBF1",
+    "#F0FDFA",
+]
+
+# Dataframe styling
+dataframeBorderColor = "#374C50"
+dataframeHeaderBackgroundColor = "#25393D"
+
+# Sidebar — teal accent panel, echoing the reference template
+[theme.sidebar]
+backgroundColor = "#0F3D3E"
+secondaryBackgroundColor = "#155E56"
+codeBackgroundColor = "#155E56"
+textColor = "#EAFFFB"
+borderColor = "#1D6E68"
+primaryColor = "#2DD4BF"
