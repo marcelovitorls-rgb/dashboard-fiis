@@ -38,6 +38,17 @@ def salvar_carteira(carteira):
     ARQUIVO_CARTEIRA.write_text(json.dumps(carteira, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def formatar_numero(valor, casas=2, sinal=False):
+    """Formata no padrão brasileiro: ponto como separador de milhar, vírgula como decimal."""
+    especificador = f"{{:{'+' if sinal else ''},.{casas}f}}"
+    texto = especificador.format(valor)
+    return texto.replace(",", "\x00").replace(".", ",").replace("\x00", ".")
+
+
+def formatar_moeda(valor):
+    return f"R$ {formatar_numero(valor)}"
+
+
 # 2. Função de Extração de Dados (Com Cache para não sobrecarregar a API)
 @st.cache_data(ttl="1h")
 def carregar_dados(tickers):
@@ -164,24 +175,24 @@ with st.container(horizontal=True):
     )
     st.metric(
         "DY médio da carteira",
-        f"{df_kpi['DY_12M'].mean():.2f}%",
+        f"{formatar_numero(df_kpi['DY_12M'].mean())}%",
         border=True,
     )
     st.metric(
         "Dividendos 12M (soma/cota)",
-        f"R$ {df_kpi['Valor_Dividendo'].sum():.2f}",
+        formatar_moeda(df_kpi['Valor_Dividendo'].sum()),
         border=True,
     )
     st.metric(
         "Maior DY 12M",
         melhor_dy['Ticker'],
-        delta=f"{melhor_dy['DY_12M']:.2f}%",
+        delta=f"{formatar_numero(melhor_dy['DY_12M'])}%",
         border=True,
     )
     st.metric(
         "Melhor valorização",
         melhor_valorizacao['Ticker'],
-        delta=f"{melhor_valorizacao['Variacao_12M']:.2f}%",
+        delta=f"{formatar_numero(melhor_valorizacao['Variacao_12M'])}%",
         border=True,
     )
 
@@ -202,14 +213,15 @@ with st.container(horizontal=True):
         with st.container(border=True):
             st.metric(
                 label=ticker,
-                value=f"R$ {dados_fundo['Preco']:.2f}",
-                delta=f"{dados_fundo['Variacao_12M']:+.2f}% (12M)",
+                value=formatar_moeda(dados_fundo['Preco']),
+                delta=f"{formatar_numero(dados_fundo['Variacao_12M'], sinal=True)}% (12M)",
                 chart_data=historico_preco,
                 chart_type="line",
             )
-            st.caption(f"DY 12M: {dados_fundo['DY_12M']:.2f}% · Proventos: R$ {dados_fundo['Valor_Dividendo']:.2f}/cota")
+            st.caption(f"DY 12M: {formatar_numero(dados_fundo['DY_12M'])}% · Proventos: {formatar_moeda(dados_fundo['Valor_Dividendo'])}/cota")
             if dados_fundo['Cotas'] > 0:
-                st.caption(f"Renda média/mês: R$ {(dados_fundo['Valor_Dividendo'] / 12 * dados_fundo['Cotas']):.2f} ({dados_fundo['Cotas']:.0f} cotas)")
+                renda_media = dados_fundo['Valor_Dividendo'] / 12 * dados_fundo['Cotas']
+                st.caption(f"Renda média/mês: {formatar_moeda(renda_media)} ({dados_fundo['Cotas']:.0f} cotas)")
 
 st.space("large")
 
@@ -223,11 +235,11 @@ if total_cotas > 0:
     df_kpi['Renda_Mensal_Media'] = df_kpi['Valor_Dividendo'] / 12 * df_kpi['Cotas']
 
     with st.container(horizontal=True):
-        st.metric("Patrimônio investido", f"R$ {df_kpi['Patrimonio'].sum():.2f}", border=True)
-        st.metric("Renda mensal média estimada", f"R$ {df_kpi['Renda_Mensal_Media'].sum():.2f}", border=True)
+        st.metric("Patrimônio investido", formatar_moeda(df_kpi['Patrimonio'].sum()), border=True)
+        st.metric("Renda mensal média estimada", formatar_moeda(df_kpi['Renda_Mensal_Media'].sum()), border=True)
         st.metric(
             "Renda anual estimada (12M)",
-            f"R$ {(df_kpi['Valor_Dividendo'] * df_kpi['Cotas']).sum():.2f}",
+            formatar_moeda((df_kpi['Valor_Dividendo'] * df_kpi['Cotas']).sum()),
             border=True,
         )
 
@@ -244,7 +256,7 @@ if total_cotas > 0:
             x=totais_mensais['Mes'],
             y=totais_mensais['Renda'],
             mode='text',
-            text=[f"R$ {valor:.2f}" for valor in totais_mensais['Renda']],
+            text=[formatar_moeda(valor) for valor in totais_mensais['Renda']],
             textposition='top center',
             showlegend=False,
             hoverinfo='skip',
@@ -259,6 +271,7 @@ if total_cotas > 0:
             margin=dict(l=10, r=10, t=40, b=10),
             height=320,
             hovermode="x unified",
+            separators=",.",
         )
         fig_renda.update_xaxes(dtick="M1", tickformat="%b/%y")
         st.plotly_chart(fig_renda, width="stretch")
@@ -276,6 +289,7 @@ layout_grafico = dict(
     margin=dict(l=10, r=10, t=40, b=10),
     height=380,
     hovermode="x unified",
+    separators=",.",
 )
 
 col1, col2 = st.columns(2)
